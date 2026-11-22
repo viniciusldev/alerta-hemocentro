@@ -1,0 +1,22 @@
+{
+  "name": "alerta-hemocentro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Alerta Hemocentro - front-end existente com API PostgreSQL",
+  "scripts": {
+    "start": "node api/server.js",
+    "dev": "node --watch api/server.js",
+    "criar-gerente": "node scripts/criar-gerente.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.1",
+    "pg": "^8.16.3"
+  }
+}

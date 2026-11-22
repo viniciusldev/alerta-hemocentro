@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alerta Hemocentro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>Ative o JavaScript para usar o Alerta Hemocentro.</noscript>
+
+  <!-- Núcleo (ordem importa: cada arquivo usa o anterior) -->
+  <script src="js/core/utils.js"></script>
+  <script src="js/core/validators.js"></script>
+  <script src="js/core/masks.js"></script>
+  <script src="js/core/data.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/domain.js"></script>
+  <script src="js/core/ui.js"></script>
+  <script src="js/core/form.js"></script>
+  <script src="js/core/router.js"></script>
+  <!-- Telas: cada uma registra suas rotas -->
+  <script src="js/screens/login.js"></script>
+  <script src="js/screens/recover.js"></script>
+  <script src="js/screens/register.js"></script>
+  <script src="js/screens/manager-alerts.js"></script> <!-- antes de alerts.js: /alertas/novo precisa casar primeiro -->
+  <script src="js/screens/alerts.js"></script>
+  <script src="js/screens/donors.js"></script>
+  <script src="js/screens/dashboard.js"></script>
+  <script src="js/screens/reports.js"></script>
+  <script src="js/screens/settings.js"></script>
+  <script src="js/screens/notfound.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
