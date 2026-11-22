@@ -323,6 +323,6 @@ app.use((err, _req, res, _next) => {
 });
 const port = Number(process.env.PORT || 3000);
 if (require.main === module) {
-  app.listen(port, '127.0.0.1', () => console.log(`Alerta Hemocentro: http://localhost:${port} | Teste: http://localhost:${port}/api/saude`));
+  app.listen(port, '0.0.0.0', () => console.log(`Alerta Hemocentro: http://localhost:${port} | Teste: http://localhost:${port}/api/saude`));
 }
 module.exports = app;
