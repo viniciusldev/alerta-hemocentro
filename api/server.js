@@ -34,9 +34,11 @@ const SLOTS = new Set(['08:00', '09:30', '11:00', '14:00', '15:30']);
 const SQL_USER = `id, perfil, ativo, nome, documento AS doc, telefone AS tel, email, tipo_sanguineo AS tipo,
   to_char(ultima_doacao, 'YYYY-MM-DD') AS ultima, ultima_info AS "ultimaInfo",
   aviso_whatsapp AS whats, aviso_email AS "avisoEmail", aviso_sms AS sms`;
-const adaptUser = (u) => u && ({ id: u.id, perfil: u.perfil, ativo: u.ativo, nome: u.nome, doc: u.doc,
+const adaptUser = (u) => u && ({
+  id: u.id, perfil: u.perfil, ativo: u.ativo, nome: u.nome, doc: u.doc,
   tel: u.tel, email: u.email || '', tipo: u.tipo, ultima: u.ultima, ultimaInfo: u.ultimaInfo,
-  canais: { whats: u.whats, email: u.avisoEmail, sms: u.sms } });
+  canais: { whats: u.whats, email: u.avisoEmail, sms: u.sms }
+});
 const isoDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v + 'T12:00:00Z')) && new Date(v + 'T12:00:00Z').toISOString().startsWith(v);
 const digits = (v) => String(v || '').replace(/\D/g, '');
 const validPassword = (s) => typeof s === 'string' && s.length >= 8 && s.length <= 72 && /[A-Za-z]/.test(s) && /\d/.test(s);
@@ -74,7 +76,7 @@ app.get('/api/bootstrap', wrap(async (req, res) => {
     pool.query('SELECT tipo_sanguineo AS tipo, nivel FROM estoque'),
     gerente ? pool.query(`SELECT id, usuario_id AS "userId", alerta_id AS "alertId", to_char(data_agendada, 'YYYY-MM-DD') AS data,
                   to_char(hora_agendada, 'HH24:MI') AS hora, status FROM agendamentos ORDER BY data_agendada DESC`)
-            : pool.query(`SELECT id, usuario_id AS "userId", alerta_id AS "alertId", to_char(data_agendada, 'YYYY-MM-DD') AS data,
+      : pool.query(`SELECT id, usuario_id AS "userId", alerta_id AS "alertId", to_char(data_agendada, 'YYYY-MM-DD') AS data,
                   to_char(hora_agendada, 'HH24:MI') AS hora, status FROM agendamentos WHERE usuario_id = $1 ORDER BY data_agendada DESC`, [req.auth.id]),
     gerente ? pool.query('SELECT alerta_id AS aid, usuario_id AS uid FROM alerta_destinatarios') : Promise.resolve({ rows: [] }),
   ]);
@@ -82,10 +84,12 @@ app.get('/api/bootstrap', wrap(async (req, res) => {
   const apptNames = { agendada: 'Agendada', cancelada: 'Cancelada', concluida: 'Concluída' };
   const destByAlert = new Map();
   for (const row of destinations.rows) { const arr = destByAlert.get(row.aid) || []; arr.push(row.uid); destByAlert.set(row.aid, arr); }
-  res.json({ current: req.auth, users: gerente ? users.rows.map(adaptUser) : [req.auth],
+  res.json({
+    current: req.auth, users: gerente ? users.rows.map(adaptUser) : [req.auth],
     alerts: alerts.rows.map((a) => ({ ...a, destinatarios: gerente ? (destByAlert.get(a.id) || []) : null })),
     stock: Object.fromEntries(stock.rows.map((s) => [s.tipo, stockNames[s.nivel]])),
-    appts: appts.rows.map((a) => ({ ...a, status: apptNames[a.status] || a.status })) });
+    appts: appts.rows.map((a) => ({ ...a, status: apptNames[a.status] || a.status }))
+  });
 }));
 
 app.post('/api/auth/login', limit(10), wrap(async (req, res) => {
@@ -108,11 +112,11 @@ app.post('/api/usuarios', limit(40, 60 * 60 * 1000), wrap(async (req, res) => {
   const d = req.body || {}, doc = digits(d.doc), tel = digits(d.tel), email = (d.email || '').trim().toLowerCase();
   if (req.auth && req.auth.perfil !== 'gerente') return fail(res, 403, 'Doadores não podem cadastrar outras contas.');
   if (typeof d.nome !== 'string' || d.nome.trim().length < 3 || d.nome.length > 100 ||
-      !/^\d{7,11}$/.test(doc) || !/^[1-9]{2}\d{8,9}$/.test(tel) || !BLOOD.has(d.tipo) ||
-      (email && (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || email.length > 120)) ||
-      !validPassword(d.senha) || (d.ultima && !isoDate(d.ultima)) ||
-      (d.ultima && d.ultima > today()) || (d.ultimaInfo && !['nunca', 'desconhecida'].includes(d.ultimaInfo)) ||
-      (!!d.ultima && !!d.ultimaInfo) || (!d.ultima && !d.ultimaInfo)) return fail(res, 400, 'Confira os dados de cadastro.');
+    !/^\d{7,11}$/.test(doc) || !/^[1-9]{2}\d{8,9}$/.test(tel) || !BLOOD.has(d.tipo) ||
+    (email && (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || email.length > 120)) ||
+    !validPassword(d.senha) || (d.ultima && !isoDate(d.ultima)) ||
+    (d.ultima && d.ultima > today()) || (d.ultimaInfo && !['nunca', 'desconhecida'].includes(d.ultimaInfo)) ||
+    (!!d.ultima && !!d.ultimaInfo) || (!d.ultima && !d.ultimaInfo)) return fail(res, 400, 'Confira os dados de cadastro.');
   const hash = await bcrypt.hash(d.senha, 12);
   const { rows } = await pool.query(`INSERT INTO usuarios
     (nome, documento, telefone, email, tipo_sanguineo, ultima_doacao, ultima_info, senha_hash, aviso_email)
@@ -178,7 +182,7 @@ app.patch('/api/estoque/:tipo', auth, manager, wrap(async (req, res) => {
 app.post('/api/alertas', auth, manager, wrap(async (req, res) => {
   const a = req.body || {};
   if (!BLOOD.has(a.tipo) || !['urgente', 'moderado'].includes(a.nivel) || !Number.isInteger(a.faltam) ||
-      a.faltam < 1 || a.faltam > 500 || !isoDate(a.prazo) || a.prazo < today() || a.prazo > addDays(today(), 30))
+    a.faltam < 1 || a.faltam > 500 || !isoDate(a.prazo) || a.prazo < today() || a.prazo > addDays(today(), 30))
     return fail(res, 400, 'Confira os dados do alerta.');
   const client = await pool.connect();
   try {
@@ -245,8 +249,10 @@ app.post('/api/recuperacao/iniciar', limit(5, 60 * 60 * 1000), wrap(async (req, 
     await pool.query(`INSERT INTO recuperacoes_senha (usuario_id,codigo_hash,expira_em)
       VALUES ($1,$2,now()+interval '10 minutes')`, [rows[0].id, await bcrypt.hash(code, 10)]);
     if (mailer) {
-      await mailer.sendMail({ from: process.env.SMTP_FROM, to: email, subject: 'Código de recuperação - Alerta Hemocentro',
-        text: `Seu código é ${code}. Ele expira em 10 minutos. Se você não solicitou a recuperação, ignore este e-mail.` });
+      await mailer.sendMail({
+        from: process.env.SMTP_FROM, to: email, subject: 'Código de recuperação - Alerta Hemocentro',
+        text: `Seu código é ${code}. Ele expira em 10 minutos. Se você não solicitou a recuperação, ignore este e-mail.`
+      });
     } else {
       console.log(`[DESENVOLVIMENTO] Código de recuperação para ${email}: ${code}`);
     }
@@ -309,6 +315,7 @@ app.use('/js', express.static(path.join(root, 'js'), { dotfiles: 'deny' }));
 app.use('/api', (_req, res) => fail(res, 404, 'Rota não encontrada.'));
 app.use((err, _req, res, _next) => {
   if (err.code === '23505') return fail(res, 409, 'Registro já existente (documento, e-mail ou agendamento).');
+  if (err.code === '23P01') return fail(res, 409, 'Você já possui um agendamento ativo dentro do intervalo mínimo de 60 dias. Escolha uma data posterior.');
   if (err.code === '23503') return fail(res, 409, 'Registro relacionado não encontrado.');
   if (err.code === '23514' || err.code === '22P02' || err.code === '22001') return fail(res, 400, 'Dados inválidos para o banco.');
   console.error('[API]', err);
