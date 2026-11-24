@@ -108,10 +108,12 @@
           <p class="sub">Compatíveis, ativos e aptos no momento do lançamento. Os contatos aparecem abaixo; o envio automático de mensagens ainda não está ativo.</p>
           ${ui.donorTable(lista, { empty: 'Nenhum doador compatível e apto no momento.' })}
           <div class="row-actions">${open ? h`<button class="btn sm ghost" id="close" type="button">Encerrar alerta</button>` : ''}<a class="lk" href="#/alertas">Voltar para alertas</a></div>`),
-        mount(root) { $('#close', root)?.addEventListener('click', async () => {
-          try { if (await closeAlert(a.id)) router.go('/alertas/' + a.id); }
-          catch (err) { ui.toast(err.message); }
-        }); },
+        mount(root) {
+          $('#close', root)?.addEventListener('click', async () => {
+            try { if (await closeAlert(a.id)) router.go('/alertas/' + a.id); }
+            catch (err) { ui.toast(err.message); }
+          });
+        },
       };
     },
   });

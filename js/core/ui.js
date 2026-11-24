@@ -40,7 +40,7 @@
   const appLayout = (active, inner, user) => h`<div class="shell"><aside class="side">${logo()}
     ${user ? h`<nav aria-label="Menu principal">${NAV.filter((n) => n.roles.includes(user.perfil)).map((n) => h`<a href="#${n.path}" class="${n.key === active ? 'on' : ''}" ${raw(n.key === active ? 'aria-current="page"' : '')}>${icon(n.icon)}${n.label}</a>`)}</nav>
       <button class="out" data-action="logout">${icon('x')}Sair</button>`
-    : h`<nav><a class="on" href="#/cadastro" aria-current="page">${icon('u')}Cadastro do Doador</a><a href="#/login">${icon('p')}Já tenho conta</a></nav>`}
+      : h`<nav><a class="on" href="#/cadastro" aria-current="page">${icon('u')}Cadastro do Doador</a><a href="#/login">${icon('p')}Já tenho conta</a></nav>`}
     ${tag()}</aside><main class="main"><div class="card">${inner}</div></main></div>${deco()}`;
 
   const pageHeader = (ic, title, sub) => h`<div class="hd"><div class="ic">${icon(ic, 44)}</div><div><h1>${title}</h1><p class="sub">${sub}</p></div></div>`;

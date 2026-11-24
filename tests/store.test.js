@@ -32,9 +32,11 @@ function createMock() {
     return response(200, { ok: true });
   }
   const map = new Map();
-  const ctx = { window: { HC: { u: { today: () => '2026-11-22' } } }, fetch, sessionStorage: {
-    getItem: (k) => map.get(k) ?? null, setItem: (k, v) => map.set(k, v), removeItem: (k) => map.delete(k),
-  } };
+  const ctx = {
+    window: { HC: { u: { today: () => '2026-11-22' } } }, fetch, sessionStorage: {
+      getItem: (k) => map.get(k) ?? null, setItem: (k, v) => map.set(k, v), removeItem: (k) => map.delete(k),
+    }
+  };
   vm.runInNewContext(storeJS, ctx);
   return { api: ctx.window.HC.api, data, calls };
 }

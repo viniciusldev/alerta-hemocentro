@@ -19,8 +19,8 @@ const digits = (s) => s.replace(/\D/g, '');
     const tipo = (await rl.question('Tipo sanguíneo [O+]: ')).trim().toUpperCase() || 'O+';
     const senha = await rl.question('Senha de acesso (mínimo 8 caracteres, letras e números): ');
     if (nome.length < 3 || nome.length > 100 || !/^\d{7,11}$/.test(doc) || !/^[1-9]{2}\d{8,9}$/.test(tel) ||
-        !['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].includes(tipo) ||
-        !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || senha.length < 8 || !/[A-Za-z]/.test(senha) || !/\d/.test(senha)) {
+      !['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].includes(tipo) ||
+      !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || senha.length < 8 || !/[A-Za-z]/.test(senha) || !/\d/.test(senha)) {
       throw new Error('Dados inválidos. Revise os campos e tente novamente.');
     }
     const hash = await bcrypt.hash(senha, 12);

@@ -11,8 +11,8 @@
 
   const part = (v) => v == null || v === false ? ''
     : v instanceof Raw ? v.s
-    : Array.isArray(v) ? v.map(part).join('')
-    : esc(v);
+      : Array.isArray(v) ? v.map(part).join('')
+        : esc(v);
 
   /** Tag de template: tudo que for interpolado é escapado, exceto outro h`` ou raw(). */
   const h = (strings, ...vals) =>
